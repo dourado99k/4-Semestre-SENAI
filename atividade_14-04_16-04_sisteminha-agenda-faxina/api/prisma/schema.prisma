@@ -1,0 +1,62 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"  
+   url      = env("DATABASE_URL")
+}
+
+model Usuario {
+  id           Int           @id @default(autoincrement())
+  nome         String
+  email        String        @unique
+  senha        String        @db.VarChar(255)
+  cpf          String        @unique
+  telefone     String?
+  role         Role          @default(USER)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  agendamentos Agendamento[]
+}
+
+model Agendamento {
+  id          Int         @id @default(autoincrement())
+  dataHora    DateTime
+  endereco    String      @db.VarChar(255)
+  complemento String?
+  cidade      String
+  tipoServico TipoServico
+  comodos     Int         @default(1)
+  observacoes String?     @db.Text
+  status      Status      @default(PENDENTE)
+  valor       Float?
+
+  usuarioId   Int
+  usuario     Usuario     @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+enum Role {
+  ADMIN
+  USER
+}
+
+enum TipoServico {
+  FAXINA_COMPLETA
+  FAXINA_RAPIDA
+  POS_OBRA
+  COMERCIAL
+}
+
+enum Status {
+  PENDENTE
+  CONFIRMADO
+  EM_ANDAMENTO
+  CONCLUIDO
+  CANCELADO
+}
