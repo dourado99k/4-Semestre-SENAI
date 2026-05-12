@@ -73,3 +73,4 @@ main()
     prisma.$disconnect();
     process.exit(1);
   });
+``
